@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        VENV_DIR = 'venv'
+        VENV = 'venv'
     }
 
     stages {
@@ -13,20 +13,19 @@ pipeline {
             }
         }
 
-        stage('Setup Virtual Environment') {
+        stage('Create Virtual Environment') {
             steps {
                 sh '''
-                    python3 -m venv $VENV_DIR
-                    . $VENV_DIR/bin/activate
-                    python -m pip install --upgrade pip
+                    python3 -m venv $VENV
                 '''
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Dependencies (pip)') {
             steps {
                 sh '''
-                    . $VENV_DIR/bin/activate
+                    . $VENV/bin/activate
+                    pip install --upgrade pip
                     pip install -r requirements.txt
                 '''
             }
@@ -35,7 +34,8 @@ pipeline {
         stage('Run Tests & Coverage') {
             steps {
                 sh '''
-                    . $VENV_DIR/bin/activate
+                    . $VENV/bin/activate
+                    pip install pytest pytest-cov
                     pytest --cov=app --cov-report=xml tests/
                 '''
             }
