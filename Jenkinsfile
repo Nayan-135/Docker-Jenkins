@@ -27,6 +27,22 @@ pipeline {
                 '''
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def app = docker.build("my-flask-app")
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    app.run('-p 5000:5000')
+                }
+            }
+        }
     }
 
     post {
