@@ -2,32 +2,37 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout') {
             steps {
-                // Pull code from your repository
+                // Pull code from repository
                 checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                // Use 'bat' for Windows Command Prompt
-                bat 'pip install -r requirements.txt'
+                // Linux shell command
+                sh '''
+                    python3 -m pip install --upgrade pip
+                    pip3 install -r requirements.txt
+                '''
             }
         }
 
-      stage('Run Tests & Coverage') {
-        steps {
-            // Using 'python -m' solves most ModuleNotFound issues
-            bat 'python -m pytest --cov=app --cov-report=xml tests/'
+        stage('Run Tests & Coverage') {
+            steps {
+                // Run pytest with coverage
+                sh '''
+                    python3 -m pytest --cov=app --cov-report=xml tests/
+                '''
+            }
         }
-    }
-
     }
 
     post {
         always {
-            // Clean up the workspace after completion
+            // Clean workspace after pipeline finishes
             cleanWs()
         }
     }
